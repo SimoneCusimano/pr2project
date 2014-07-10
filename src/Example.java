@@ -1,8 +1,0 @@
-
-/**
- *
- * @author 
- */
-public class Example {
-    
-}
