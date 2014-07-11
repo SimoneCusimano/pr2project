@@ -14,6 +14,12 @@ import java.util.Map;
 import javax.net.ssl.HttpsURLConnection;
 import org.apache.commons.validator.routines.UrlValidator;
 
+/*
+    Per fixare il fatto che non viene trovata la classe, copia il jar che genera netbeans.
+    Lo trovi in dist/ - devi copiarlo in %JENAROOT%/lib
+    Per testare, unzippa nella root di Jena lo zip che trovi nel progetto.
+*/
+
 public class JenaExtension extends PFuncAssignToObject{
 
     private Node shortenURL(String param, String key) {
