@@ -1,4 +1,3 @@
-
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.sparql.expr.NodeValue;
 import com.hp.hpl.jena.sparql.function.FunctionBase2;
@@ -37,13 +36,13 @@ public class JenaExtension extends FunctionBase2{
             throw new IllegalArgumentException("Url non valido");
         
         HttpsURLConnection crawler = shortConnectionBuilder(key);
-        crawler.setDoOutput(true);
+        
         try { 
             OutputStreamWriter out = new OutputStreamWriter(crawler.getOutputStream());
             out.write("longUrl="+param);
             out.flush();
             out.close();
-        
+            
             InputStream inputStream = crawler.getInputStream();
             //String encoding = crawler.getContentEncoding();
             String response = inputStream.toString();
@@ -51,7 +50,7 @@ public class JenaExtension extends FunctionBase2{
         
         }catch(Exception x) 
         {
-            System.out.println("excp shortenURL " + x.getMessage());
+            x.printStackTrace();
         }
         return null;
     }
@@ -83,6 +82,10 @@ public class JenaExtension extends FunctionBase2{
             HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
             con.setRequestMethod("POST");
             con.setRequestProperty("Content-Type","application/json");
+            con.setRequestProperty("charset", "UTF-8"); 
+            con.setUseCaches(false);
+            con.setDoInput(true);
+            con.setDoOutput(true);
             return con;
         }
         catch(Exception e)

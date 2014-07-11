@@ -7,6 +7,7 @@ import com.hp.hpl.jena.query.QuerySolution;
 import com.hp.hpl.jena.query.ResultSet;
 import com.hp.hpl.jena.rdf.model.Literal;
 import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.sparql.expr.NodeValue;
 import com.hp.hpl.jena.util.FileManager;
 
 
@@ -21,7 +22,10 @@ public class Main {
         model.write(System.out,"RDF/JSON");
         */
         
-        sparqlTest();
+        //sparqlTest();
+        
+        JenaExtension pippo = new JenaExtension();
+        pippo.exec(NodeValue.makeNodeString("http://informatica.unica.it"),NodeValue.makeNodeInteger(1));
     }
     
     static void sparqlTest(){
