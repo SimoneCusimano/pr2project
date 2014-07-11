@@ -2,14 +2,8 @@ package it.unica.pr2;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hp.hpl.jena.graph.Node;
-import com.hp.hpl.jena.query.QueryBuildException;
-import com.hp.hpl.jena.sparql.engine.ExecutionContext;
-import com.hp.hpl.jena.sparql.engine.QueryIterator;
 import com.hp.hpl.jena.sparql.expr.NodeValue;
-import com.hp.hpl.jena.sparql.function.FunctionBase2;
 import com.hp.hpl.jena.sparql.pfunction.PFuncAssignToObject;
-import com.hp.hpl.jena.sparql.pfunction.PropFuncArg;
-import com.hp.hpl.jena.sparql.pfunction.PropertyFunction;
 import com.hp.hpl.jena.sparql.util.FmtUtils;
 import java.io.IOException;
 import java.io.InputStream;
