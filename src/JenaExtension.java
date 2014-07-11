@@ -1,3 +1,4 @@
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.sparql.expr.NodeValue;
 import com.hp.hpl.jena.sparql.function.FunctionBase2;
@@ -5,8 +6,10 @@ import com.hp.hpl.jena.sparql.util.FmtUtils;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.net.URL;
+import java.util.Map;
 import javax.net.ssl.HttpsURLConnection;
 import org.apache.commons.validator.routines.UrlValidator;
+import org.apache.jena.atlas.json.JsonObject;
 
 public class JenaExtension extends FunctionBase2{
 
@@ -33,31 +36,47 @@ public class JenaExtension extends FunctionBase2{
 
     private NodeValue shortenURL(String param, String key) {
         if(!validateURL(param))
-            throw new IllegalArgumentException("Url non valido");
+            throw new IllegalArgumentException("[EXECEPTION] => Invalid Url.");
         
         HttpsURLConnection crawler = shortConnectionBuilder(key);
         
         try { 
+            String json = "{ \"longUrl\" : " + param + " }";
             OutputStreamWriter out = new OutputStreamWriter(crawler.getOutputStream());
-            out.write("longUrl="+param);
+            out.write(json);
             out.flush();
             out.close();
             
-            InputStream inputStream = crawler.getInputStream();
-            //String encoding = crawler.getContentEncoding();
-            String response = inputStream.toString();
-            System.out.println(response);
+            if(crawler.getResponseCode() == 200)
+            {
+                try {
+                    InputStream inputStream = crawler.getInputStream();
+                    ObjectMapper mapper = new ObjectMapper();
+                    Map<String, Object> jsonMap = mapper.readValue(inputStream, Map.class);
+                    String shortnedUrl = jsonMap.get("id").toString();
+                    return NodeValue.makeNodeString(shortnedUrl);
+                } catch(Exception e) 
+                {
+                    System.out.println("[EXCEPTION] => shortenURL");
+                    System.out.println("[EXCEPTION DETAIL] => " + e.getMessage());
+                }
+            }
+            else
+            {
+                System.out.println(crawler.getErrorStream());
+            }
         
-        }catch(Exception x) 
+        }catch(Exception e) 
         {
-            x.printStackTrace();
+            System.out.println("[EXCEPTION] => shortenURL");
+            System.out.println("[EXCEPTION DETAIL] => " + e.getMessage());
         }
         return null;
     }
 
     private NodeValue explodeURL(String param, String key) {
         if(!validateURL(param))
-            throw new IllegalArgumentException("Url non valido");
+            throw new IllegalArgumentException("[EXECEPTION] => Invalid Url.");
         return null;
     }
     
@@ -66,10 +85,8 @@ public class JenaExtension extends FunctionBase2{
         param = param.replace("\"", "");
         UrlValidator urlValidator = new UrlValidator(schemes);
         if (urlValidator.isValid(param)) {
-           System.out.println("url is valid");
            return true;
         } else {
-           System.out.println("url is invalid");
            return false;
         }
     }
@@ -81,16 +98,15 @@ public class JenaExtension extends FunctionBase2{
             URL obj = new URL(url);
             HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
             con.setRequestMethod("POST");
-            con.setRequestProperty("Content-Type","application/json");
-            con.setRequestProperty("charset", "UTF-8"); 
-            con.setUseCaches(false);
+            con.setRequestProperty("Content-Type","application/json; charset=UTF-8");
             con.setDoInput(true);
             con.setDoOutput(true);
             return con;
         }
         catch(Exception e)
         {
-            System.out.println("excp shortConnectionBuilder " + e.getMessage());
+            System.out.println("[EXCEPTION] => shortConnectionBuilder");
+            System.out.println("[EXCEPTION DETAIL] => " + e.getMessage());
         }
         
         return null;
