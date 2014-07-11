@@ -25,7 +25,14 @@ public class Main {
         //sparqlTest();
         
         JenaExtension pippo = new JenaExtension();
-        pippo.exec(NodeValue.makeNodeString("http://informatica.unica.it"),NodeValue.makeNodeInteger(1));
+        NodeValue res = pippo.exec(NodeValue.makeNodeString("http://www.google.com"),NodeValue.makeNodeInteger(1));
+        System.out.println(res.asUnquotedString());
+        res = pippo.exec(NodeValue.makeNodeString("http://www.informatica.unica.it"),NodeValue.makeNodeInteger(1));
+        System.out.println(res.asUnquotedString());
+        res = pippo.exec(NodeValue.makeNodeString("http://www.unica.it"),NodeValue.makeNodeInteger(1));
+        System.out.println(res.asUnquotedString());
+        res = pippo.exec(NodeValue.makeNodeString("https://www.jena.apache.org"),NodeValue.makeNodeInteger(1));
+        System.out.println(res.asUnquotedString());
     }
     
     static void sparqlTest(){
@@ -36,7 +43,7 @@ public class Main {
                 "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " +
                 "PREFIX foaf: <http://xmlns.com/foaf/0.1/> " +
                 "SELECT * WHERE { " +
-                " ?person foaf:name ?x ." +
+                " ?person foaf:homepage ?x ." +
                 //" FILTER(?x = \"Simone Cusimano\")" +
                 "}";
         //SELECT qualsiasi cosa WHERE 'una persona' 'ha un nome' 
