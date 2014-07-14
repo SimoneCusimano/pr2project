@@ -2,9 +2,9 @@ package it.unica.pr2;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hp.hpl.jena.graph.Node;
+import com.hp.hpl.jena.graph.NodeFactory;
 import com.hp.hpl.jena.sparql.expr.NodeValue;
 import com.hp.hpl.jena.sparql.pfunction.PFuncAssignToObject;
-import com.hp.hpl.jena.sparql.util.FmtUtils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
@@ -12,7 +12,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 import javax.net.ssl.HttpsURLConnection;
-import org.apache.commons.validator.routines.UrlValidator;
 
 /*
     Per fixare il fatto che non viene trovata la classe, copia il jar che genera netbeans.
@@ -29,7 +28,7 @@ public class JenaExtension extends PFuncAssignToObject{
         HttpsURLConnection crawler = connectionBuilder("https://www.googleapis.com/urlshortener/v1/url?key=",key,true);
         
         try { 
-            String json = "{ \"longUrl\" : " + param + " }";
+            String json = "{ \"longUrl\" : \"" + param + "\" }";
             OutputStreamWriter out = new OutputStreamWriter(crawler.getOutputStream());
             out.write(json);
             out.flush();
@@ -63,7 +62,6 @@ public class JenaExtension extends PFuncAssignToObject{
     }
 
     private Node explodeURL(String param) {
-        
         if(!validateURL(param) || !validShortedURL(param))
             throw new IllegalArgumentException("[EXECEPTION] => Invalid Url.");
         
@@ -98,9 +96,7 @@ public class JenaExtension extends PFuncAssignToObject{
     
     private Boolean validateURL(String param){
         String[] schemes = {"http","https"}; // DEFAULT schemes = "http", "https", "ftp"
-        param = param.replace("\"", "");
-        UrlValidator urlValidator = new UrlValidator(schemes);
-        return urlValidator.isValid(param);
+        return param.startsWith(schemes[0], 0) || param.startsWith(schemes[1], 0);
     }
     
     private Boolean validShortedURL(String param) {
@@ -143,17 +139,19 @@ public class JenaExtension extends PFuncAssignToObject{
 
     @Override
     public Node calc(Node node) {
-        String stringParam = FmtUtils.stringForNode(node);
-        Boolean action = validShortedURL(stringParam);
+        if(!node.isLiteral())
+            return null;
         
+        String stringParam = node.getLiteralLexicalForm();
+        Boolean action = validShortedURL(stringParam);
         Node returnValue = null;
         final String apiKey = "AIzaSyDuCjNg-TQNcgkBeYS_Lt7F1cCjmO8-Ri0";
         
-        if(action)
+        if(!action)
             returnValue = shortenURL(stringParam, apiKey);
         else
             returnValue = explodeURL(stringParam);
         
-        return returnValue;
+        return NodeFactory.createLiteral(returnValue.getLiteralLexicalForm());
     }
 }
