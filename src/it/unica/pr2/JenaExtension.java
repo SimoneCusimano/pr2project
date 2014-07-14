@@ -101,7 +101,7 @@ public class JenaExtension extends PFuncAssignToObject{
     * 
     */
     private Boolean validateURL(String param){
-        String[] schemes = {"http","https"}; // DEFAULT schemes = "http", "https"
+        String[] schemes = {"http://","https://"}; // DEFAULT schemes = "http", "https"
         return param.startsWith(schemes[0], 0) || param.startsWith(schemes[1], 0);
     }
     
