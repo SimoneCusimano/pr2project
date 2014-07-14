@@ -37,7 +37,7 @@ public class JenaExtension extends PFuncAssignToObject{
     */
     private Node shortenURL(String param, String key) {
         if(!validateURL(param))
-            return NodeFactory.createLiteral("Invalid input.");
+            return NodeFactory.createLiteral("ERROR!!");
         
         HttpsURLConnection crawler = connectionBuilder(BASE_URL+"key=",key,true);
         
@@ -56,23 +56,10 @@ public class JenaExtension extends PFuncAssignToObject{
                     Map<String, Object> jsonMap = mapper.readValue(inputStream, Map.class);
                     String shortnedUrl = jsonMap.get("id").toString();
                     return NodeValue.makeNodeString(shortnedUrl).asNode();
-                } catch(IOException e) 
-                {
-                    System.out.println("[EXCEPTION] => shortenURL");
-                    System.out.println("[EXCEPTION DETAIL] => " + e.getMessage());
-                }
-            }
-            else
-            {
-                System.out.println(crawler.getErrorStream());
-            }
-        
-        }catch(IOException e) 
-        {
-            System.out.println("[EXCEPTION] => shortenURL");
-            System.out.println("[EXCEPTION DETAIL] => " + e.getMessage());
-        }
-        return NodeFactory.createLiteral("Invalid Http Request.");
+                } catch(IOException e) { }
+            } 
+        }catch(IOException e) { }
+        return NodeFactory.createLiteral("ERROR!!");
     }
 
     /**
@@ -85,9 +72,10 @@ public class JenaExtension extends PFuncAssignToObject{
     */
     private Node explodeURL(String param) {
         if(!validateURL(param) || !validShortedURL(param))
-            return NodeFactory.createLiteral("Invalid input.");
+            return NodeFactory.createLiteral("ERROR!!");
 
         HttpsURLConnection crawler = connectionBuilder(BASE_URL+"shortUrl=",param,false);
+
         try {
             if(crawler.getResponseCode() == 200)
             {
@@ -97,23 +85,11 @@ public class JenaExtension extends PFuncAssignToObject{
                     Map<String, Object> jsonMap = mapper.readValue(inputStream, Map.class);
                     String shortnedUrl = jsonMap.get("longUrl").toString();
                     return NodeValue.makeNodeString(shortnedUrl).asNode();
-                } catch(IOException e) 
-                {
-                    System.out.println("[EXCEPTION] => explodeURL");
-                    System.out.println("[EXCEPTION DETAIL] => " + e.getMessage());
-                }
+                } catch(IOException e){ }
             }
-            else
-            {
-                System.out.println(crawler.getErrorStream());
-            }
-        } catch(IOException e)
-        {
-            System.out.println("[EXCEPTION] => explodeURL");
-            System.out.println("[EXCEPTION DETAIL] => " + e.getMessage());
-        }
+        } catch(IOException e){ }
         
-        return NodeFactory.createLiteral("Invalid Http Request.");
+        return NodeFactory.createLiteral("ERROR!!");
     }
 
     /**
@@ -144,10 +120,8 @@ public class JenaExtension extends PFuncAssignToObject{
             return obj.getHost().equals("goo.gl");
         } catch (MalformedURLException e)
         {
-            System.out.println("[EXCEPTION] => validShortedURL");
-            System.out.println("[EXCEPTION DETAIL] => " + e.getMessage());
+            return false;
         }
-        return null;
     }
     
     /**
