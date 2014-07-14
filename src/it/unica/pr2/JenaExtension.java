@@ -18,16 +18,16 @@ public class JenaExtension extends PFuncAssignToObject{
 
     private Node shortenURL(String param, String key) {
         if(!validateURL(param))
-            throw new IllegalArgumentException("[EXECEPTION] => Invalid Url.");
+            return NodeFactory.createLiteral("Invalid input.");
         
         HttpsURLConnection crawler = connectionBuilder("https://www.googleapis.com/urlshortener/v1/url?key=",key,true);
         
         try { 
             String json = "{ \"longUrl\" : \"" + param + "\" }";
-            OutputStreamWriter out = new OutputStreamWriter(crawler.getOutputStream());
-            out.write(json);
-            out.flush();
-            out.close();
+            try (OutputStreamWriter out = new OutputStreamWriter(crawler.getOutputStream())) {
+                out.write(json);
+                out.flush();
+            }
             
             if(crawler.getResponseCode() == 200)
             {
@@ -58,7 +58,7 @@ public class JenaExtension extends PFuncAssignToObject{
 
     private Node explodeURL(String param) {
         if(!validateURL(param) || !validShortedURL(param))
-            throw new IllegalArgumentException("[EXECEPTION] => Invalid Url.");
+            return NodeFactory.createLiteral("Invalid input.");
         
         HttpsURLConnection crawler = connectionBuilder("https://www.googleapis.com/urlshortener/v1/url?shortUrl=",param,false);
         try {
@@ -134,22 +134,17 @@ public class JenaExtension extends PFuncAssignToObject{
 
     @Override
     public Node calc(Node node) {
-        String stringParam = "";
+        String stringParam = "Invalid input.";
+        
         if(!node.isLiteral() && node.isURI())
-        {
             stringParam = node.toString();
-        }
         else if(node.isLiteral())
-        {
             stringParam = node.getLiteralLexicalForm();
-        }
         else
-        {
-            return null;
-        }
+            return NodeFactory.createLiteral(stringParam);
 
         Boolean action = validShortedURL(stringParam);
-        Node returnValue = null;
+        Node returnValue;
         final String apiKey = "AIzaSyDuCjNg-TQNcgkBeYS_Lt7F1cCjmO8-Ri0";
         
         if(!action)
