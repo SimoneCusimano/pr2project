@@ -13,11 +13,6 @@ import java.net.URL;
 import java.util.Map;
 import javax.net.ssl.HttpsURLConnection;
 
-/*
-    Per fixare il fatto che non viene trovata la classe, copia il jar che genera netbeans.
-    Lo trovi in dist/ - devi copiarlo in %JENAROOT%/lib
-    Per testare, unzippa nella root di Jena lo zip che trovi nel progetto.
-*/
 
 public class JenaExtension extends PFuncAssignToObject{
 
@@ -139,10 +134,20 @@ public class JenaExtension extends PFuncAssignToObject{
 
     @Override
     public Node calc(Node node) {
-        if(!node.isLiteral())
+        String stringParam = "";
+        if(!node.isLiteral() && node.isURI())
+        {
+            stringParam = node.toString();
+        }
+        else if(node.isLiteral())
+        {
+            stringParam = node.getLiteralLexicalForm();
+        }
+        else
+        {
             return null;
-        
-        String stringParam = node.getLiteralLexicalForm();
+        }
+
         Boolean action = validShortedURL(stringParam);
         Node returnValue = null;
         final String apiKey = "AIzaSyDuCjNg-TQNcgkBeYS_Lt7F1cCjmO8-Ri0";
