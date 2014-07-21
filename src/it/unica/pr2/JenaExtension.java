@@ -24,7 +24,7 @@ import javax.net.ssl.HttpsURLConnection;
 public class JenaExtension extends PFuncAssignToObject{
 
     final String BASE_URL = "https://www.googleapis.com/urlshortener/v1/url?";
-    final String API_KEY = "AIzaSyDuCjNg-TQNcgkBeYS_Lt7F1cCjmO8-Ri0";
+    final String API_KEY = "";
     
     /**
     * Abbrevia, sfruttando le API Google, l'URL preso come parametro.
